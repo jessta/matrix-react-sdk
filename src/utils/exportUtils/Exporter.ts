@@ -76,8 +76,7 @@ export default abstract class Exporter {
     }
 
     protected async downloadZIP(): Promise<string | void> {
-        const brand = SdkConfig.get().brand;
-        const filenameWithoutExt = `${brand} - Chat Export - ${formatFullDateNoDay(new Date())}`;
+        const filenameWithoutExt = this.fileNameWithoutExt();
         const filename = `${filenameWithoutExt}.zip`;
         const { default: JSZip } = await import('jszip');
 
@@ -97,6 +96,13 @@ export default abstract class Exporter {
         logger.log("Cleaning up...");
         window.removeEventListener("beforeunload", this.onBeforeUnload);
         return "";
+    }
+
+    protected fileNameWithoutExt() {
+        const brand = SdkConfig.get().brand;
+        const dateString = formatFullDateNoDay(new Date());
+        const roomName = this.room.name.replace(/[ \\/]/g, '_');
+        return `${brand} - ${roomName} - Chat Export - ${dateString}`;
     }
 
     public async cancelExport(): Promise<void> {
